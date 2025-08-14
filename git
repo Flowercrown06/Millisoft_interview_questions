@@ -1,0 +1,402 @@
+| Əmr          | Məqsəd                                            |
+| ------------ | ------------------------------------------------- |
+| git init     | Yeni repo yaratmaq                                |
+| git add      | Dəyişiklikləri staging-ə əlavə etmək              |
+| git commit   | Staging-dəki dəyişiklikləri commit etmək          |
+| git push     | Lokal commitləri remote-a göndərmək               |
+| git status   | Cari vəziyyəti göstərmək                          |
+| git log      | Commit tarixçəsini göstərmək                      |
+| git branch   | Branch-ləri yaratmaq/göstərmək                    |
+| git checkout | Branch dəyişmək və ya commit-ə keçmək             |
+| .gitignore   | Faylların izlənməməsini təmin etmək               |
+| git fetch    | Remote dəyişiklikləri çəkmək (merge etmədən)      |
+| git pull     | Remote dəyişiklikləri çəkmək və merge etmək       |
+| git reset    | Commit və ya staging dəyişikliklərini geri çəkmək |
+| git revert   | Commit-i ləğv edən yeni commit yaratmaq           |
+| git bisect   | Bug-u yaradan commit-i tapmaq                     |
+| cherry-pick  | Digər branch-dəki commit-i seçib tətbiq etmək     |
+
+Git interview questions
+
+1. Yeni bir layihəyə başlamısınız və bu layihənin remote repoda yerləşdirilməsi tələb olunur. Bu vəziyyətdə Git istifadə edərək ilk addımlarınız nə olur?
+Answer: Yeni layihəyə başlamışamsa, əvvəlcə 'git init' ilə lokal repository yaradıram. Sonra faylları 'git add .' və 'git commit -m "smth" ilə commit edirəm.
+Daha sonra remote repository-ni 'git remote add origin <URL>' ilə əlavə edib, 'git push -u origin main' ilə kodu göndərirəm
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <repo-URL>
+git push -u origin main
+
+2. Komanda yoldaşınız lokalda müəyyən fayllarda dəyişiklik etdiyini, amma onları hələ commit və push etmədiyini bildirir. Sizin isə eyni faylda düzəliş etməyiniz tələb olunur. Bu vəziyyətdə necə davranarsınız?
+Answer: Əgər eyni faylda dəyişiklik etmək lazımdırsa, əvvəlcə komanda yoldaşımın dəyişikliklərini gözləyər və ya ondan branch yaratmasını xahiş edərdim.
+Əgər o hələ commit etməyibsə, mən öz dəyişikliklərimi ayrıca branch-də edər və sonra merge və ya rebase yolu ilə konfliktləri həll edərdim. Bu yanaşma həm lokalda, həm də remote-da konfliktlərin qarşısını alır və kodun stabilliyini qoruyur.
+git checkout -b my-feature-branch əmri ilə öz dəyişikliklərimi ayrıca branch-də edirəm. Faylda dəyişiklik etdikdən sonra, məsələn App.java faylına yeni metod əlavə edirəm.
+ Daha sonra git add App.java və git commit -m "Add new feature in App.java" əmrləri ilə dəyişiklikləri commit edirəm. Ardınca git push -u origin my-feature-branch əmri ilə branch-i remote repository-yə göndərirəm.
+Komanda yoldaşım dəyişikliklərini commit və push etdikdən sonra git checkout main və git pull origin main əmrləri ilə main branch-i yeniləyirəm. Daha sonra git merge my-feature-branch əmri ilə öz branch-imdəki dəyişiklikləri main branch-ə birləşdirirəm.
+ Əgər konflikt yaranarsa, Git onu göstərir, mən isə həll edib commit edirəm. Sonda git push origin main əmri ilə dəyişiklikləri remote repository-yə göndərirəm.
+git checkout -b my-feature-branch
+git add App.java
+git commit -m "Add new feature in App.java"
+git push -u origin my-feature-branch
+
+git checkout main
+git pull origin main
+git merge my-feature-branch
+git push origin main
+
+3. Lokal olaraq etdiyiniz dəyişiklikləri GitHub-dakı əsas branch-ə necə əlavə edirsiniz? Addımları izah edin.
+Lokal dəyişikliklərimi əsas branch-ə əlavə etmək üçün əvvəlcə faylları git add . əmri ilə staging area-ya əlavə edirəm. Sonra git commit -m "commit mesajı" ilə commit edirəm. Daha sonra git pull origin main əmri ilə remote-dakı main branch-i yeniləyirəm ki, konfliktlərdən qaçım.
+ Əgər konflikt varsa, həll edib yenidən commit edirəm. Sonda git push origin main əmri ilə dəyişiklikləri GitHub-dakı əsas branch-ə göndərirəm
+git add .
+git commit -m "Update project files"
+git pull origin main
+git push origin main
+
+4. Komanda bir neçə branch-də paralel işləyir və siz də yeni bir funksiya üzərində işləməlisiniz. Eyni anda həm öz işinizi görmək, həm də başqalarının koduna təsir etməmək üçün necə bir Git strategiyası tətbiq edərdiniz?
+Komanda bir neçə branch-də paralel işləyirsə, mən əsas branch-dən (main və ya develop) yeni branch yaradıram (git checkout -b feature/new-function). Dəyişiklikləri bitirdikdən sonra branch-i remote-a göndərirəm (git push -u origin feature/new-function).
+ Sonra Pull Request yaradıb kodu merge edirəm. Bu strategiya başqalarının koduna təsir etmədən işləməyə imkan verir.
+git checkout main
+git pull origin main
+git checkout -b feature/new-function
+git add .
+git commit -m "Implement new function"
+git push -u origin feature/new-function
+
+5. Komanda rəhbəri sizdən dəyişikliklərin siyahısını və commit tarixçəsini göstərməyinizi istəyir. Siz bu məlumatları necə əldə edirsiniz?
+Dəyişikliklərin siyahısını və commit tarixçəsini görmək üçün əsasən git log əmrindən istifadə edirəm. Bu əmr bütün commit-lərin tarixini, müəllifini və commit mesajlarını göstərir. Əgər daha qısa formada, sadəcə commit ID və mesajlarını görmək istəsəm, git log --oneline istifadə edirəm.
+ Həmçinin, konkret faylda hansı dəyişikliklərin edildiyini görmək üçün git diff və ya commit-lər arasındakı fərqləri görmək üçün git diff <commit1> <commit2> istifadə edirəm.
+# Bütün commit tarixçəsini göstərir
+git log
+
+# Qısa format (commit ID və mesaj bir sətrdə)
+git log --oneline
+
+# Hər commit üçün dəyişən faylları göstərmək
+git log --name-only
+
+# Commit detalları ilə dəyişiklikləri göstərmək
+git show <commit_id>
+
+# Konkret faylın commit tarixçəsi
+git log fayl_adi
+
+6. Komandada biri target/ və .log kimi lazımsız faylları səhvən Git repoya əlavə edib və push edib. Bu, repoda qarışıqlıq yaradıb. Belə bir vəziyyətdə siz bu problemi texniki olaraq necə həll edərdiniz
+Əgər komandada kimsə target/ qovluğunu və .log fayllarını səhvən Git repoya əlavə edib və artıq push edibsə, bu halda əvvəlcə problemi lokalda yoxlayıram. Birinci addım target/ və .log fayllarını .gitignore-a əlavə etməkdir ki, gələcəkdə bu fayllar təkrar əlavə olunmasın.
+Sonra isə Git tarixindən bu faylları silmək lazımdır. Bunun üçün git rm --cached əmri ilə faylları staging-dən çıxarıram, sonra commit edib push edirəm. Əgər artıq repoda çoxlu commit-lərdə bu fayllar varsa və onları tam təmizləmək lazımdırsa, git filter-repo və ya BFG Repo-Cleaner kimi alətlərdən istifadə edirəm. Bununla tarixdən də silinir. Bu addımlar bitdikdən sonra komanda üzvlərinə repolarını yenidən clone etmələrini və ya pull --force etmələrini tövsiyə edirəm ki, sinxronlaşsınlar.
+# 1. Lazımsız faylları .gitignore-a əlavə et
+echo "target/" >> .gitignore
+echo "*.log" >> .gitignore
+
+# 2. Git-də artıq izlənən faylları tarixdən çıxar
+git rm -r --cached target
+git rm --cached *.log
+
+# 3. Dəyişiklikləri commit et
+git add .gitignore
+git commit -m "Remove unwanted files and update .gitignore"
+
+# 4. Remote repoya push et
+git push origin main
+
+# (Əgər bütün tarixdən silmək lazımdırsa)
+git filter-repo --path target/ --invert-paths
+git filter-repo --path *.log --invert-paths
+git push origin --force
+
+7. Github və Git terminlərinin fərqini izah edin.
+Git lokal versiya idarəetmə sistemi (VCS) olaraq işləyir. Yəni kompüterimizdə faylları izləməyə, dəyişiklikləri commit etməyə, branch-lər yaratmağa və konfliktləri həll etməyə imkan verir. GitHub isə Git əsasında qurulmuş online platformadır; burada layihələrimizi uzaq serverdə saxlayırıq, komandada əməkdaşlıq edirik, pull request-lər, issue-lar və kod review-lər həyata keçiririk.
+ Sadəcə desək, Git texnologiyadır, GitHub isə onu online olaraq idarə etməyin və paylaşmağın yoludur.
+
+8. Siz remote repoda son dəyişiklikləri yükləmək istəyirsiniz, amma lokal branch-də dəyişiklikləriniz var. Hansı yanaşmanı seçərsiniz və niyə?
+Əgər lokal branch-də dəyişikliklərim varsa və remote-dakı son commit-ləri götürmək istəyirəmsə, əvvəlcə lokal dəyişikliklərimi git stash ilə müvəqqəti saxlayıram. Sonra git pull əmri ilə remote-dan son dəyişiklikləri çəkirəm. Pull bitdikdən sonra git stash pop ilə dəyişikliklərimi geri qaytarıb, lazım olarsa konfliktləri həll edirəm.
+Bu yanaşma lokal dəyişiklikləri itirmədən remote update-ləri tətbiq etməyə imkan verir
+# 1. Lokal dəyişiklikləri müvəqqəti saxlamaq
+git stash
+
+# 2. Remote-dan son dəyişiklikləri çəkmək
+git pull origin main
+
+# 3. Lokal dəyişiklikləri geri qaytarmaq
+git stash pop
+
+# 4. Əgər konflikt yaranarsa, onu həll edib commit etmək
+git add .
+git commit -m "Resolve conflicts after pull"
+
+Alternativ olaraq git pull --rebase də istifadə edilə bilər. Bu halda lokal commit-lər remote commit-lərin üstünə “yenidən oynanır” və tarixçə daha təmiz qalır.
+
+9. İki fərqli branch-də eyni faylda dəyişiklik etmisiniz və onları birləşdirməlisiniz. Merge və ya rebase seçimlərindən hansını necə istifadə edərdiniz?
+Əgər iki fərqli branch-də eyni faylda dəyişiklik etmişəmsə, onları birləşdirərkən vəziyyətə görə merge və ya rebase istifadə edirəm.
+
+Əgər tarixçəni qorumaq və bütün commit-ləri ayrı-ayrılıqda saxlamaq istəyirəmsə, git merge seçirəm. Bu zaman konflikt varsa, Git onu göstərir və mən həll edib commit edirəm.
+
+Əgər tarixçəni daha səliqəli saxlamaq, yəni lokal commit-ləri remote commit-lərin üstünə qoymaq istəyirəmsə, git rebase istifadə edirəm. Rebase zamanı da konfliktlər yaranarsa onları həll edirəm, sonra git rebase --continue ilə prosesi tamamlayıram.
+Beləliklə, merge və rebase-i vəziyyətə görə seçirəm: merge daha “sabit və tarixçə qorunan”, rebase isə daha “təmiz və lineer tarixçə” üçün uyğundur.”
+# Merge nümunəsi
+git checkout main
+git merge feature-branch
+# Konflikt varsa həll et
+git add App.java
+git commit -m "Resolve merge conflicts"
+
+# Rebase nümunəsi
+git checkout feature-branch
+git rebase main
+# Konflikt varsa həll et
+git add App.java
+git rebase --continue
+
+# Rebase bitdikdən sonra main branch-ə merge/push edə bilərik
+git checkout main
+git merge feature-branch
+git push origin main
+
+Merge: daha təhlükəsiz, tarixçəni qoruyur
+Rebase: daha təmiz tarixçə, amma diqqətli olmaq lazımdır (xüsusilə paylaşılmış branch-lərdə)
+
+10. Komanda daxilində kimsə səhv commit edib və bu, əsas branch-ə push olunub. Bu vəziyyətdə hansı düzəliş üsullarını təklif edərdiniz?
+Əgər komanda üzvü səhv commit edib və artıq əsas branch-ə (main) push olunubsa, bunu düzəltmək üçün bir neçə üsul var.
+Ən sadə və təhlükəsiz yol, revert etməkdir. git revert <commit_id> əmri ilə səhv commit-in əksini edən yeni commit yaradılır. Bu üsul tarixçəni pozmur və artıq push edilmiş commit-lərə müdaxilə etmir.
+Əgər commit çox yaxın zamandadır və komanda ilə razılıq varsa, git reset --hard <commit_id> və sonra git push --force ilə tarixçəni dəyişmək olar. Amma bu risklidir, çünki digər komanda üzvlərinin lokal branch-lərinə təsir edə bilər.
+# 1. Səhv commit-i geri almaq üçün (təhlükəsiz)
+git revert <commit_id>
+git push origin main
+
+# 2. (Riskli, tarixçəni dəyişir) Reset və force push
+git reset --hard <commit_id>
+git push --force origin main
+
+revert → təhlükəsiz, tarixçə qorunur, komanda üçün ideal
+reset + push --force → diqqətlə, yalnız razılaşma varsa
+
+11. Kod merge zamanı conflict-lə qarşılaşırsınız. Bu problemi necə müəyyənləşdirir və necə həll edirsiniz?
+Merge zamanı konflikt yaranarsa, Git bunu avtomatik xəbər verir. Konfliktli fayllar git status ilə görünür və faylın içində xüsusi marker-lərlə (<<<<<<<, =======, >>>>>>>) konfliktin harada olduğunu göstərir.
+Bu zaman mən faylı açıb dəyişiklikləri yoxlayıram və hansı versiyanın qalacağını seçirəm, ya da hər iki dəyişiklikdən istifadə edib problemi həll edirəm. Faylı düzəltdikdən sonra git add <fayl> ilə staging-ə əlavə edirəm və git commit ilə merge-i tamamlayıram.
+# 1. Merge əmri
+git merge feature-branch
+
+# 2. Konflikt yaranarsa, statusa bax
+git status
+
+# 3. Faylı aç, konfliktləri həll et
+# Fayl içində <<<<<<< HEAD ... ======= ... >>>>>>> branch_name marker-lərini görəcəksən
+
+# 4. Dəyişiklikləri staging-ə əlavə et
+git add App.java
+
+# 5. Merge-i tamamla
+git commit -m "Resolve merge conflicts between main and feature-branch"
+
+12. Lokal branch-də etdiyiniz dəyişiklikləri müvəqqəti saxlamaq və başqa bir şey üzərində işləmək istəyirsiniz. Bu hal üçün nə edirsiniz?
+Əgər lokal branch-də dəyişiklik etmişəmsə, amma onları commit etmədən başqa bir iş üzərində işləmək istəyirəmsə, git stash istifadə edirəm. Bu əmrlə bütün dəyişikliklər müvəqqəti saxlanılır və iş ağacı təmizlənir.
+Daha sonra istədiyim branch-ə keçib işləyə bilirəm. İşim bitdikdən sonra git stash pop ilə dəyişiklikləri geri qaytarıram. Əgər bir neçə stash varsa, git stash list ilə siyahıya baxıb konkret stashi seçə bilərəm.
+# 1. Dəyişiklikləri müvəqqəti saxlamaq
+git stash
+
+# 2. Branch dəyişmək və başqa işlə məşğul olmaq
+git checkout main
+
+# 3. Stash-də saxlanmış dəyişiklikləri geri qaytarmaq
+git stash pop
+
+# 4. Mövcud stashi siyahıda görmək
+git stash list
+
+# 5. Konkret stashi tətbiq etmək
+git stash apply stash@{2}
+
+git stash → dəyişiklikləri müvəqqəti saxlayır, işinizi itirmirsiniz
+stash pop → dəyişiklikləri geri gətirir
+stash list və stash apply → daha kompleks hallarda seçmə imkanı verir
+
+13. Son commit mesajınızda yazı xətası etmisiniz və onu dəyişmək istəyirsiniz. Bunun üçün hansı addımları atırsınız?
+Əgər son commit mesajımda səhv varsa və onu dəyişmək istəyirəmsə, git commit --amend istifadə edirəm.
+Bu əmrlə son commit-i redaktə edib düzgün mesaj yazıram. Əgər commit artıq remote branch-ə push olunmayıbsa, sadəcə əmri icra etmək kifayətdir. Amma commit push olunubsa, dəyişiklik etdikdən sonra git push --force ilə remote-a göndərməliyəm, çünki tarixçə dəyişir
+# 1. Son commit mesajını dəyişmək
+git commit --amend -m "Corrected commit message"
+
+# 2. Əgər commit artıq remote-a push olunubsa
+git push --force origin main
+
+--amend → sadəcə son commit-i dəyişdirir
+push --force → yalnız commit artıq remote-a göndərilibsə istifadə edilir
+Tarixi dəyişdirdiyinə görə diqqətli olmaq vacibdir
+
+14. Əsas branch-də olmayan bir commit-i öz branch-inizə əlavə etmək istəyirsiniz. Bunu necə edərsiniz?
+Əgər əsas branch-də olmayan bir commit-i öz branch-imə əlavə etmək istəyirəmsə, git cherry-pick <commit_id> istifadə edirəm. Bu əmrlə həmin commit-i seçib hazırkı branch-ə tətbiq edirəm. Əgər konflikt yaranarsa, əvvəlcə onu həll edib git add və git commit ilə prosesi tamamlayıram.
+ Bu yanaşma commit-ləri başqa branch-dən təkrar etmək üçün çox faydalıdır
+# 1. Öz branch-inə keç
+git checkout my-feature-branch
+
+# 2. Əsas branch-də olmayan commit-i tətbiq et
+git cherry-pick <commit_id>
+
+# 3. Əgər konflikt yaranarsa, onu həll et
+git add App.java
+git commit -m "Resolve conflicts during cherry-pick"
+
+Cherry-pick → konkret commit-i seçib digər branch-ə tətbiq edir
+Konflikt olarsa həll etmək vacibdir
+Bu üsul “istənilən commit-i istənilən branch-ə götürmək” üçün ideal yanaşmadır
+
+15. .gitignore faylına əlavə etdiyiniz bir fayl hələ də Git tərəfindən izlənilir. Bu problemi necə aradan qaldırırsınız?
+Əgər .gitignore faylına bir fayl əlavə etmişəm, amma o hələ də Git tərəfindən izlənirsə, səbəb odur ki, fayl əvvəldən commit olunub və Git artıq onu izləyir.
+Bu problemi həll etmək üçün git rm --cached <fayl> əmri ilə faylı yalnız staging-dən çıxarıram, sonra commit edib push edirəm. Bundan sonra .gitignore faylı həmin faylı izləməyəcək
+# 1. Faylı Git izləməsindən çıxarmaq (amma lokalda qalır)
+git rm --cached config.properties
+
+# 2. Dəyişiklikləri commit etmək
+git commit -m "Stop tracking config.properties"
+
+# 3. Remote-a push etmək
+git push origin main
+
+.gitignore yalnız yeni əlavə olunan faylları bloklayır
+Əgər fayl əvvəldən commit olunubsa, rm --cached istifadə etmək lazımdır
+Bu üsul faylı lokalda saxlayır, amma Git izləməsini dayandırır
+
+16. Layihə tarixçəsində müəyyən bir bug-un hansı commitin səbəb olduğunu tapmaq istəyirsiniz. Bu halda hansı yanaşmanı seçərdiniz?
+Əgər layihə tarixçəsində bir bug-un hansı commit-dən qaynaqlandığını tapmaq istəyirəmsə, git bisect istifadə edirəm.
+Bu üsulla Git tarixçəni binary search prinsipi ilə bölür və hansının problem yaratdığını addım-addım tapır. İlk əvvəl git bisect start ilə prosesi başlatıram, sonra git bisect good <commit> və git bisect bad <commit> göstərirəm.
+Git avtomatik olaraq ara commit-ləri yoxlamaq üçün branch-ləri dəyişir və nəticədə problemli commit-i tapıram. Tapdıqdan sonra git bisect reset ilə normal branch-ə qayıdıram
+# 1. Bisect prosesini başlatmaq
+git bisect start
+
+# 2. Məlum yaxşı və pis commit-ləri göstərmək
+git bisect good abc123
+git bisect bad def456
+
+# 3. Git avtomatik ara commit-ləri yoxlayır
+# Hər ara commit-də test edirsən və git bisect good/bad deyirsən
+# Nəticədə problemli commit tapılır
+
+# 4. Bisect prosesini bitirmək və normal branch-ə qayıtmaq
+git bisect reset
+
+git bisect → ən sürətli yol bug-un səbəbini tapmaq üçün
+
+17. Komanda daxilində 3-4 nəfər eyni modullar üzərində işləyir. Git workflow olaraq hansı yanaşmanı tövsiyə edərdiniz və niyə?
+Əgər komanda daxilində 3–4 nəfər eyni modullar üzərində işləyirsə, mən feature branch workflow və ya Git Flow tövsiyə edirəm.
+Hər kəs əsas branch (main/master) ilə birbaşa işləmək əvəzinə, öz feature branch-lərini yaradır və dəyişikliklərini həmin branch-də commit edir. İş bitdikdən sonra pull request vasitəsilə main branch-ə merge edilir. Bu yanaşma bir neçə üstünlük verir: konfliktlərin sayı azalır, commit tarixçəsi daha təmiz olur, review və test prosesi daha rahat həyata keçirilir
+# 1. Main branch-i yeniləmək
+git checkout main
+git pull origin main
+
+# 2. Öz feature branch-ini yaratmaq
+git checkout -b feature-login
+
+# 3. Dəyişiklikləri commit etmək
+git add .
+git commit -m "Implement login feature"
+
+# 4. Remote-a push etmək
+git push -u origin feature-login
+
+# 5. Pull request yaradıb merge etmək (GitHub/GitLab üzərindən)
+
+Feature branch workflow → komanda üçün təhlükəsiz və səliqəli yanaşma
+Git Flow → daha mürəkkəb layihələrdə release, develop və feature branch-ləri ilə idarəetmə
+
+18. Commit-ləri təmizləmək və bir neçə dəyişiklik tarixçəsini birləşdirmək istəmisiniz. Bunu necə edər və hansı hallarda istifadə edərsiniz?
+Əgər commit-ləri təmizləmək və bir neçə dəyişiklik tarixçəsini birləşdirmək istəyirəmsə, git rebase -i (interactive rebase) istifadə edirəm. Bu üsulla müəyyən intervaldakı commit-ləri seçib, onları squash edərək bir commit halına gətirə bilərəm. Bu yanaşma xüsusilə feature branch üzərində işləyərkən faydalıdır, çünki commit tarixçəsini daha təmiz və oxunaqlı edir.
+Əsas branch-də artıq push olunmuş commit-lərdə bunu etmək riskli ola bilər, çünki tarixçəni dəyişdirir
+# 1. Interactive rebase başlatmaq (son 5 commit)
+git rebase -i HEAD~5
+
+# 2. Açılan redaktor pəncərəsində:
+# - squash etmək istədiyiniz commit-ləri "s" və ya "squash" ilə qeyd edin
+# - commit mesajını redaktə edin və saxlayın
+
+# 3. Rebase bitdikdən sonra, dəyişiklikləri push etmək
+# Əgər artıq remote-a push olunubsa, --force istifadə edin
+git push --force origin feature-branch
+
+Rebase + squash → commit-ləri təmizləmək, tarixçəni səliqəli saxlamaq
+Əsas branch-də push olunmuş commit-lərdə ehtiyatlı olmaq
+Feature branch-də tez-tez istifadə olunur
+
+19. Sizə ötürülmüş layihədə .gitmodules faylı var və siz oradakı modulu düzgün işlədə bilmirsiniz. Bu vəziyyətdə necə davranarsınız?
+Əgər layihədə .gitmodules faylı varsa, bu deməkdir ki, layihə bir və ya bir neçə submodule istifadə edir. Əgər submodule düzgün işləmirsə, ilk növbədə git submodule init ilə submodule-u lokal repo üçün aktivləşdirirəm, sonra git submodule update ilə son commit-ə gətirirəm.
+Əgər artıq submodule əlavə olunubsa, amma yenilənməyibsə, git submodule update --remote istifadə edib ən son versiyanı çəkirəm. Hər zaman submodule-ün düzgün branch-də olduğunu yoxlayıram və lazım gələrsə, git checkout <branch> ilə düz branch-ə keçirəm.
+# 1. Submodule-u lokal repo üçün aktivləşdirmək
+git submodule init
+
+# 2. Submodule-u son commit-ə gətirmək
+git submodule update
+
+# 3. Ən son versiyanı çəkmək (remote branch-dən)
+git submodule update --remote
+
+# 4. Submodule-də branch-i dəyişmək
+cd path/to/submodule
+git checkout develop
+
+Submodule-lər layihəni modular saxlamaq üçün istifadə olunur
+init → ilk dəfə lokal üçün aktivləşdirmək
+update → müəyyən commit-ə gətirmək
+update --remote → ən son remote commit-i çəkmək
+
+20. Çoxsaylı commit-lərlə dolu bir feature branch-inizi əsas branch-ə birləşdirmədən əvvəl commit-ləri birləşdirmək istəyirsiniz( 20 commit var və bunları 1 commitdə birləşdirmək istəyirsiniz). Nə edərdiniz?
+Əgər feature branch-də 20 commit varsa və əsas branch-ə merge etmədən əvvəl onları bir commit-də birləşdirmək istəyirəmsə, git rebase -i main istifadə edirəm. Açılan interactive rebase pəncərəsində ilk commit-i pick saxlayıram, digər 19 commit-i isə squash edərək birləşdirirəm.
+Commit mesajını redaktə edib təsdiqlədikdən sonra branch-də artıq yalnız bir commit qalır. Bu yanaşma əsas branch-ə merge zamanı tarixçəni daha təmiz və oxunaqlı saxlayır.
+# 1. Feature branch-də interactive rebase başlatmaq
+git checkout feature-branch
+git rebase -i main
+
+# 2. Açılan pəncərədə:
+# - İlk commit pick saxlanır
+# - Digər commit-lər squash edilir
+
+# 3. Commit mesajını redaktə edib saxla
+
+# 4. Əgər commit artıq remote-da varsa, push üçün --force istifadə et
+git push --force origin feature-branch
+
+Squash + rebase → feature branch-də commit-ləri birləşdirib tarixçəni təmizləmək
+Əsas branch-ə merge etmədən əvvəl xüsusilə faydalıdır
+Push edilmiş branch-lərdə --force ehtiyatla istifadə olunmalıdır
+
+21. Böyük ölçülü media fayllarını repoda saxlamalı olursunuz və repo çox yavaş işləməyə başlayır. Bu problemi necə həll edərsiniz?
+Əgər repo-da böyük media faylları varsa və repo yavaş işləyirsə, ən yaxşı yol Git LFS (Large File Storage) istifadə etməkdir. Git LFS faylların əslini ayrı bir serverdə saxlayır və repo-da yalnız pointer-ləri saxlayır.
+Bunun üçün əvvəlcə git lfs install ilə LFS aktivləşdirirəm, sonra git lfs track "*.mp4" kimi fayl növlərini əlavə edirəm. Daha sonra commit edib push edirəm. Bu yanaşma repo-nun ölçüsünü kiçildir və əməliyyatların sürətini artırır.
+# 1. Git LFS aktivləşdirmək
+git lfs install
+
+# 2. Böyük fayl növünü izləmək
+git lfs track "*.mp4"
+
+# 3. .gitattributes faylı commit etmək
+git add .gitattributes
+git commit -m "Track mp4 files with Git LFS"
+
+# 4. Böyük faylları əlavə edib push etmək
+git add videos/large-video.mp4
+git commit -m "Add large video file"
+git push origin main
+
+Git LFS → böyük faylların repo-da idarə edilməsini təmin edir
+Repo ölçüsünü azaltmaq və əməliyyatları sürətləndirmək üçün ideal üsuldur
+Alternativ olaraq, faylları xarici serverdə saxlamaq və repo-da link istifadə etmək də mümkündür
+
+22. Komanda yoldaşınız sizinlə eyni faylı dəyişdirib və pull etdikdə merge conflict yaranır. Bu problemi texniki və komanda baxımından necə həll edərsiniz?
+Əgər komanda yoldaşım eyni faylı dəyişdiribsə və mən pull etdikdə merge conflict yaranırsa, əvvəlcə texniki olaraq git status ilə konfliktli faylları müəyyən edirəm.
+Faylı açıb Git-in marker-lərini (<<<<<<<, =======, >>>>>>>) yoxlayıram və hansının saxlanacağına qərar verirəm. Faylı düzəltdikdən sonra git add <fayl> və git commit ilə merge-i tamamlayıram.
+
+Komanda baxımından isə, belə halların qarşısını almaq üçün mütəmadi pull etmək, branch-lərdə işləmək, kod review-lar vasitəsilə ünsiyyət saxlamaq və konfliktləri vaxtında həll etmək lazımdır. Pull request-lərdə review prosesi konfliktləri öncədən aşkar etməyə kömək edir.
+# 1. Remote-dan dəyişiklikləri çəkmək
+git pull origin main
+
+# 2. Konflikt yaranarsa status-a bax
+git status
+
+# 3. Faylı aç və konfliktləri həll et
+# <<<<<<< HEAD ... ======= ... >>>>>>> branch_name marker-lərini yoxla
+
+# 4. Düzəldilmiş faylı staging-ə əlavə et
+git add App.java
+
+# 5. Merge-i tamamla
+git commit -m "Resolve merge conflict in App.java"
+
+Texniki olaraq git status + marker-lərlə konflikt həlli göstərmək
+Komanda baxımından: mütəmadi pull, feature branch-lər, kod review və kommunikasiya

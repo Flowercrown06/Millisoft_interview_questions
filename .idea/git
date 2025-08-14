@@ -1,0 +1,36 @@
+git init
+git add, git commit və git push
+git status ||  git log
+git branch || git checkout
+.gitignore faylı
+git fetch || git pull
+git reset || git revert
+git bisect
+cherry-pick
+git reset (soft || hard)
+
+
+Git interview questions
+1. Yeni bir layihəyə başlamısınız və bu layihənin remote repoda yerləşdirilməsi tələb olunur. Bu vəziyyətdə Git istifadə edərək ilk addımlarınız nə olur?
+Answer: Yeni layihəyə başlamışamsa, əvvəlcə *git init* ilə lokal repository yaradıram. Sonra faylları *git add* və *git commit* ilə commit edirəm. Daha sonra remote repository-ni git remote add origin <URL> ilə əlavə edib, git push -u origin main ilə kodu göndərirəm
+2. Komanda yoldaşınız lokalda müəyyən fayllarda dəyişiklik etdiyini, amma onları hələ commit və push etmədiyini bildirir. Sizin isə eyni faylda düzəliş etməyiniz tələb olunur. Bu vəziyyətdə necə davranarsınız?
+3. Lokal olaraq etdiyiniz dəyişiklikləri GitHub-dakı əsas branch-ə necə əlavə edirsiniz? Addımları izah edin.
+4. Komanda bir neçə branch-də paralel işləyir və siz də yeni bir funksiya üzərində işləməlisiniz. Eyni anda həm öz işinizi görmək, həm də başqalarının koduna təsir etməmək üçün necə bir Git strategiyası tətbiq edərdiniz?
+5. Komanda rəhbəri sizdən dəyişikliklərin siyahısını və commit tarixçəsini göstərməyinizi istəyir. Siz bu məlumatları necə əldə edirsiniz?
+6. Komandada biri target/ və .log kimi lazımsız faylları səhvən Git repoya əlavə edib və push edib. Bu, repoda qarışıqlıq yaradıb. Belə bir vəziyyətdə siz bu problemi texniki olaraq necə həll edərdiniz
+7. Github və Git terminlərinin fərqini izah edin.
+8. Siz remote repoda son dəyişiklikləri yükləmək istəyirsiniz, amma lokal branch-də dəyişiklikləriniz var. Hansı yanaşmanı seçərsiniz və niyə?
+9. İki fərqli branch-də eyni faylda dəyişiklik etmisiniz və onları birləşdirməlisiniz. Merge və ya rebase seçimlərindən hansını necə istifadə edərdiniz?
+10. Komanda daxilində kimsə səhv commit edib və bu, əsas branch-ə push olunub. Bu vəziyyətdə hansı düzəliş üsullarını təklif edərdiniz?
+11. Kod merge zamanı conflict-lə qarşılaşırsınız. Bu problemi necə müəyyənləşdirir və necə həll edirsiniz?
+12. Lokal branch-də etdiyiniz dəyişiklikləri müvəqqəti saxlamaq və başqa bir şey üzərində işləmək istəyirsiniz. Bu hal üçün nə edirsiniz?
+13. Son commit mesajınızda yazı xətası etmisiniz və onu dəyişmək istəyirsiniz. Bunun üçün hansı addımları atırsınız?
+14. Əsas branch-də olmayan bir commit-i öz branch-inizə əlavə etmək istəyirsiniz. Bunu necə edərsiniz?
+15. .gitignore faylına əlavə etdiyiniz bir fayl hələ də Git tərəfindən izlənilir. Bu problemi necə aradan qaldırırsınız?
+16. Layihə tarixçəsində müəyyən bir bug-un hansı commitin səbəb olduğunu tapmaq istəyirsiniz. Bu halda hansı yanaşmanı seçərdiniz?
+17. Komanda daxilində 3-4 nəfər eyni modullar üzərində işləyir. Git workflow olaraq hansı yanaşmanı tövsiyə edərdiniz və niyə?
+18. Commit-ləri təmizləmək və bir neçə dəyişiklik tarixçəsini birləşdirmək istəmisiniz. Bunu necə edər və hansı hallarda istifadə edərsiniz?
+19. Sizə ötürülmüş layihədə .gitmodules faylı var və siz oradakı modulu düzgün işlədə bilmirsiniz. Bu vəziyyətdə necə davranarsınız?
+20. Çoxsaylı commit-lərlə dolu bir feature branch-inizi əsas branch-ə birləşdirmədən əvvəl commit-ləri birləşdirmək istəyirsiniz( 20 commit var və bunları 1 commitdə birləşdirmək istəyirsiniz). Nə edərdiniz?
+21. Böyük ölçülü media fayllarını repoda saxlamalı olursunuz və repo çox yavaş işləməyə başlayır. Bu problemi necə həll edərsiniz?
+22. Komanda yoldaşınız sizinlə eyni faylı dəyişdirib və pull etdikdə merge conflict yaranır. Bu problemi texniki və komanda baxımından necə həll edərsiniz?
