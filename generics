@@ -1,0 +1,128 @@
+1. Java-da Generics nədir və hansı məqsədlə istifadə olunur?
+Java-da Generics tip təhlükəsizliyini təmin edən bir mexanizmdir. Onlar klassların, interfeyslərin və metodların tip parametrli olmasına imkan verir. Məqsəd, eyni kodu müxtəlif tipdə obyektlərlə işlədə bilmək və runtime-da ClassCastException riskini azaltmaqdır. Məsələn, bir List yaratmaq istəyirsənsə, hansı tip element saxlayacağını əvvəlcədən göstərə bilərsən:
+List<String> və ya List<Integer>. Bu yolla compiler mərhələsində tip yoxlanır və səhvlər erkən aşkar olunur
+Generics həm klasslarda, həm metodlarda istifadə oluna bilər.
+T, E, K, V kimi simvollar çox istifadə olunur (T = Type, E = Element, K = Key, V = Value)
+
+2. <? extends T> və <? super T> arasındakı fərq nədir?
+<? extends T> və <? super T> Generics wildcard-larıdır və tipin hansı istiqamətdə məhdudlaşdırılacağını göstərir:
+1️⃣ <? extends T> → upper-bounded wildcard. Yəni, tip T-dən və ya T-in subclass-ından ola bilər. Bu zaman obyekti oxuya bilərik, amma add əməliyyatı çox məhduddur, çünki dəqiq hansı subclass olduğunu bilmirik.
+2️⃣ <? super T> → lower-bounded wildcard. Yəni, tip T və ya T-in superclass-larından ola bilər. Bu zaman obyekti əlavə etmək (add) mümkündür, amma oxuduqda yalnız Object tipində məlumat alırıq, çünki dəqiq tipi bilinmir.”
+Qısaca: extends → oxumaq üçün, super → yazmaq (add) üçün daha rahatdır
+“PECS” qaydası: Producer Extends, Consumer Super
+Producer (verir) → extends
+Consumer (istehlak edir / əlavə edir) → super
+
+3. Java-da type erasure nədir?
+Java-da type erasure Generics-in işləmə mexanizmidir. Java runtime zamanı Generics tip məlumatlarını saxlamır. Yəni, compiler mərhələsində tip yoxlamaları aparılır, amma proqram işlədikdə tip məlumatları silinir (erased) və əslində hamısı Object kimi davranır.
+Məqsəd: Generics kodunu backward compatibility ilə təmin etməkdır, yəni Java 5-dən əvvəl yazılmış kodla da işləyə bilmək.
+Nəticə: Generics compile-time type safety təmin edir, amma runtime-da tip məlumatı yoxdur, ona görə bəzi əməliyyatlarda cast etmək lazım gəlir.
+Compile-time: tip yoxlanır → type-safe
+Runtime: tip məlumatı silinir → type erasure
+Type erasure səbəbindən List<String> və List<Integer> eyni bytecode-a çevrilir.
+
+4. List<String> obyektini List<Object> tipinə verə bilməzsiniz. Niyə?
+Java-da List<String> obyektini List<Object> tipinə verə bilməzsən, çünki Generics invariant-dir. Yəni List<String> və List<Object> bir-birinin subclass-ı deyil.
+Məqsəd: tip təhlükəsizliyini qorumaqdır. Əgər bunu icazə versək, List<Object>-ə Integer əlavə etmək olar və nəticədə List<String>-də Integer saxlanmış olar, bu isə səhvə gətirib çıxarardı.
+Əgər oxumaq üçün yalnız müəyyən bir növü qəbul etmək istəyirsənsə, ? extends Object istifadə edə bilərsən, amma yazmaq məhdudlaşır
+
+5. Generic method nədir? Aşağıdakı metodu izah edin:
+public <T> void printList(List<T> list) {
+    for (T item : list) {
+        System.out.println(item);
+    }
+}
+Burada <T> metodun tip parametridir. List<T> isə T tipli elementləri saxlayan bir siyahıdır. Metod içində for-each ilə siyahıdakı hər elementi oxuyur və çap edir.
+Məqsəd: eyni metod müxtəlif tipdə siyahılar üçün istifadə oluna bilsin, məsələn, List<String> və List<Integer> üçün
+Generic method Java-da bir və ya bir neçə tip parametrini qəbul edə bilən metoddur. Yəni, metod hansı tipdə obyektlə işləyəcəyini çağırılan zaman müəyyən edir
+
+6. Generics olmasaydı, aşağıdakı kodda hansı problem yarana bilərdi?
+List list = new ArrayList();
+list.add("text");
+String s = (String) list.get(0);
+
+Əgər Generics olmasaydı, yuxarıdakı kod runtime tip səhvlərinə açıq olardı.
+
+List list = new ArrayList();
+list.add("text");
+String s = (String) list.get(0);
+
+
+Burada List raw type istifadə olunur və compiler mərhələsində tip yoxlanışı yoxdur.
+Problem: Əgər yanlışlıqla Integer əlavə etsək:
+list.add(123);
+Sonra String s = (String) list.get(1); icra olunanda ClassCastException atılacaq.
+Generics ilə bunu belə yazsaq:
+
+List<String> list = new ArrayList<>();
+list.add("text");
+// list.add(123); // Xəta! Compile-time-da tutulur
+
+Tip səhvləri compile-time-da aşkar olunur, runtime səhvləri minimuma enir.
+Raw type istifadə etmək təhlükəlidir → runtime-da səhvlər yarana bilər.
+Generics istifadə edərək tip təhlükəsizliyi təmin edirik → səhvlər compile-time-da tutulur.
+
+7. Java-da raw type nədir? Raw type istifadə etməyin riskləri nələrdir?
+Java-da raw type dedikdə, Generics olmadan istifadə olunan tip nəzərdə tutulur. Məsələn:
+List list = new ArrayList(); // raw type
+
+Burada List tip parametrsizdir, yəni compiler tip təhlükəsizliyini yoxlamır.
+5Riskləri:
+1️⃣ Runtime ClassCastException: Yanlış tip əlavə edilərsə, proqram runtime-da xətaya düşə bilər.
+2️⃣ Compiler xəbərdarlıqları: Raw type istifadə etdikdə compiler warning verir, amma icra etməyə icazə verir.
+3️⃣ Tip təhlükəsizliyin pozulması: Kodun oxunması və saxlanması daha çətin olur.
+Məsləhət: Həmişə Generics istifadə et, tip təhlükəsizliyi təmin et və raw type-dan qaç
+
+8. <? extends T> və <? super T> fərqini real nümunə ilə izah edin
+9. List<? extends Number> tipində bir siyahıya Integer və ya Double əlavə etmək mümkün deyil. Niyə?
+List<? extends Number> tipində bir siyahıya Integer və ya Double əlavə etmək mümkün deyil, çünki ? extends Number upper-bounded wildcard-dır.
+Yəni, compiler yalnız bilir ki, siyahı Number və ya onun subclass-larından biridir, amma dəqiq subclass nə olduğunu bilmir.
+Məsələn: Siyahı əslində List<Double> ola bilər. Əgər biz ora Integer əlavə etsək, tip təhlükəsizliyi pozular və runtime səhvlərinə səbəb ola bilər.
+Qaydası: extends → oxumaq üçün uyğundur, add etmək məhduddur (yalnız null əlavə etmək olar).
+
+10. Aşağıdakı metod niyə compile olunmur?
+public void addNumbers(List<? extends Number> list) {
+    list.add(10); // compile error
+}
+
+Metod compile olunmur, çünki List<? extends Number> upper-bounded wildcard istifadə edir.
+? extends Number → siyahının tipi Number və ya onun subclass-larından biri ola bilər, amma compiler dəqiq subclass-ı bilmir.
+Məsələn, siyahı əslində List<Double> ola bilər. Əgər biz ora 10 (Integer) əlavə etsək, tip təhlükəsizliyi pozular. Buna görə compiler icazə vermir.
+Nəticə: ? extends T ilə olan siyahılara yalnız oxumaq olar, add etmək mümkün deyil (yalnız null əlavə etmək olar).
+
+11 .Bounded type parametri ilə generic method yazın ki, yalnız Number-in sub-class-ları üçün işləsin.
+12 .Aşağıdakı kod niyə səhv verir?
+List<String>[] array = new List<String>[10]; // compile error
+Java-da List<String>[] array = new List<String>[10]; yazmaq compile error verir, çünki Java generic array-ları yaratmağa icazə vermir.
+Səbəb:
+1️⃣ Generics və arrays fərqli runtime davranışı göstərir. Array-lar runtime-da tip məlumatını saxlayır, Generics isə type erasure səbəbindən runtime-da tip məlumatını saxlamır.
+2️⃣ Əgər Generic array olsaydı, tip təhlükəsizliyi pozula bilərdi. Məsələn, List<Integer> əlavə etmək olar və runtime xətasına səbəb ola bilərdi.
+Məsləhət: Generic array yaratmaq əvəzinə List içində List istifadə etmək daha təhlükəsizdir.
+
+13. Generic-lərlə var olan runtime limitations hansılardır?
+Java-da Generics compile-time-da tip təhlükəsizliyi təmin edir, amma runtime-da bəzi məhdudiyyətlər var. Bu məhdudiyyətlər type erasure səbəbindən yaranır.
+Əsas limitasiyalar:
+1️⃣ Type erasure: Generic tip məlumatı runtime-da mövcud deyil. Məsələn, List<String> və List<Integer> runtime-da eyni tip (List) kimi davranır.
+2️⃣ Instance creation məhdudiyyəti: new T() və ya new T[] yazmaq olmaz, çünki T runtime-da məlum deyil.
+3️⃣ Static kontekstlərdə tip parametrindən istifadə olmur: Generic tip static sahələrdə və metodlarda istifadə oluna bilməz.
+4️⃣ ** instanceof ilə yoxlanmır**: if (obj instanceof T) yazmaq olmaz, çünki T runtime-da mövcud deyil.
+5️⃣ Generic array yaratmaq olmaz: List<String>[] array = new List<String>[10]; compile error verir.
+Bu limitasiyaları nəzərə alaraq Generics-i read, write və metod tip təhlükəsizliyi üçün istifadə etmək lazımdır.
+
+14. Class<T> necə istifadə olunur və generics ilə birlikdə Reflection necə işləyir?
+Java-da Class<T> obyektləri Generic tip məlumatını runtime-da təmsil etmək üçün istifadə olunur. Normal generics runtime-da type erasure səbəbindən tip məlumatını saxlamır, amma Class<T> ilə biz runtime-da tip məlumatını saxlaya və reflection ilə işləyə bilərik.
+İstifadə məqsədləri:
+1️⃣ Runtime-da obyekt yaratmaq: clazz.newInstance() və ya clazz.getDeclaredConstructor().newInstance().
+2️⃣ Reflection ilə metod və field-lara çatmaq: clazz.getMethod(), clazz.getField().
+3️⃣ Generics ilə birlikdə tip təhlükəsizliyi saxlamaq.
+Qaydası: <T> tip parametrini Class obyektinə ötürürük ki, runtime-da tip məlum olsun.
+
+15.MyGenericClass<T extends Comparable<T>> nə deməkdir? Bu hansı vəziyyətlərdə istifadə olunur?
+MyGenericClass<T extends Comparable<T>> yazmaq o deməkdir ki, T tipi yalnız Comparable interfeysini implement edən tiplər üçün istifadə oluna bilər.
+Yəni, T-nin obyektləri bir-biri ilə compareTo metodu vasitəsilə müqayisə oluna bilir.
+İstifadə hallar:
+1️⃣ Sort edilə bilən obyektlər üçün generic class/metod yazmaq.
+2️⃣ Heap, Tree, PriorityQueue kimi strukturda tip təhlükəsizliyi ilə müqayisə etmək.
+3️⃣ Compile-time tip yoxlaması ilə yalnız compareable obyektləri qəbul etmək.
+
+16. Java-da generic-lərlə bir utility class yazın ki, istənilən tipdə massivdə maksimum elementi tapsın
