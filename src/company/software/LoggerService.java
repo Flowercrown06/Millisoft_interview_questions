@@ -29,15 +29,5 @@ public class LoggerService {
         log("ERROR", operation, user, request, response, e);
     }
 
-    public static void main(String[] args) {
-        UserCreateRequest req = new UserCreateRequest("ali123", "ali@example.com");
-        UserCreateResponse res = new UserCreateResponse(101, "SUCCESS");
-        logInfo("CREATE", "admin", req, res);
-        UserUpdateRequest badReq = new UserUpdateRequest(999, "bad_email_format");
-        try {
-            throw new EmailFormatException("Invalid email format: 'bad_email_format'");
-        } catch (Exception e) {
-            logError("UPDATE", "user42", badReq, null, e);
-        }
-    }
+
 }
