@@ -24,7 +24,6 @@ public class LoggerService {
         log("INFO", operation, user, request, response, null);
     }
 
-    // Error log
     public static void logError(String operation, String user, Object request, Object response, Exception e) {
         log("ERROR", operation, user, request, response, e);
     }
