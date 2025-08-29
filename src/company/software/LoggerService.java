@@ -1,12 +1,13 @@
 package company.software;
 
+import company.software.enumm.LogLevel;
 import company.software.exception.EmailFormatException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LoggerService {
-    public static void log(String level, String operation, String user, Object request, Object response, Exception e) {
+    public static void log(LogLevel level, String operation, String user, Object request, Object response, Exception e) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String timestamp = LocalDateTime.now().format(formatter);
 
@@ -18,14 +19,23 @@ public class LoggerService {
         System.out.println("[REQUEST]   " + request);
         System.out.println("[RESPONSE]  " + response);
 
+
+        if (e != null) {
+            System.out.println("[ERROR]     " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            System.out.println("[STACKTRACE]");
+            for (StackTraceElement element : e.getStackTrace()) {
+                System.out.println("    at " + element.toString());
+            }
+        }
+
         System.out.println();
     }
     public static void logInfo(String operation, String user, Object request, Object response) {
-        log("INFO", operation, user, request, response, null);
+        log(LogLevel.INFO, operation, user, request, response, null);
     }
 
     public static void logError(String operation, String user, Object request, Object response, Exception e) {
-        log("ERROR", operation, user, request, response, e);
+        log(LogLevel.ERROR, operation, user, request, response, e);
     }
 
 
